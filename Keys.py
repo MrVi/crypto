@@ -11,14 +11,17 @@ class Key:
         self.secretKey = []#[0] * (n + t)
         self.publicKey = [[0]*(n - m*t) for i in range(m*t)]
         self.Hmatrix = [[0]*(n) for i in range(t*m)]
+        self.random_list = []
 
     def printAll(self):
         print('Secret Key: \n', self.secretKey)
         print('Public Key: \n', numpy.matrix(self.publicKey))
         print('H mantrix: \n', numpy.matrix(self.Hmatrix))
+        print('Random List: \n', self.random_list)
 
     def randomListOfElem(self, goppa):
-        random_list = [i for i in range(self.elem_num)]
+        random_list = [i for i in range(self.elem_num-1)]
+        #print('rand', random_list)
         for i in range(goppa.t):
             random_list.remove(goppa.roots_index[i])
         random_list = random.sample(random_list, self.n)
@@ -40,30 +43,37 @@ class Key:
                     self.Hmatrix[i*field.m + k][j] = res_of_divide[k]
         #print('H mantrix: \n', numpy.matrix(self.Hmatrix))
 
-    def gaussChange(self):
-        max_str = getStringNumber(self.Hmatrix)
-        print('max_str:', max_str)
-        max_col = getColumnNumber(self.Hmatrix)
-        print('max_col:', max_col)
-        for k in range(max_str - 1):
-            #bubble_max_row(self.Hmatrix, k)
-            find_max_row(self.Hmatrix,k)
-            for l in range(k + 1, max_str):
-                if (self.Hmatrix[l][k] == 1):
-                    for p in range(k, max_col):
-                        self.Hmatrix[l][p] = (self.Hmatrix[l][p] + self.Hmatrix[k][p]) % 2
+    def createSecretKey(self, field, goppa, random_list):
+        for i in range(len(random_list)):
+            self.secretKey.append(field.elem[random_list[i]])
+        self.secretKey += goppa.roots
 
+    def createPublicKey(self, H):
+        max_str = getStringNumber(H)
+        max_col = getColumnNumber(H)
+        for i in range(max_str):
+            for j in range (max_col - max_str):
+                self.publicKey[i][j] = H[i][max_str + j]
 
     def generateKeys(self, field, goppa):
-        random_list = self.randomListOfElem(goppa)
-        #random_list = [0, 10, 2, 9, 14, 7, 12, 3, 13, 4, 11, 6, 15]
-        #print(random_list)
-        self.createHmatrix(field, goppa, random_list)
-        self.printAll()
-        self.gaussChange()
-        #make_generator_matrix(self.Hmatrix)
-        print('H mantrix: \n', numpy.matrix(self.Hmatrix))
-        # self.secretKey += random_list
-        # print(self.secretKey)
+        self.random_list = self.randomListOfElem(goppa)
+        """temp random_key """
+        self.random_list = [29, 2, 14, 12, 15, 13, 27, 4, 9, 30, 6, 22, 10, 21, 0, 11, 20, 7, 24, 19, 26, 17, 23, 25, 16]
+        self.createHmatrix(field, goppa, self.random_list)
+        #self.printAll()
+        k = 0
+        gaussChange(self.Hmatrix)
+        while (is_singular(self.Hmatrix)):
+            self.random_list = self.randomListOfElem(goppa)
+            #print(self.random_list)
+            self.createHmatrix(field, goppa, self.random_list)
+            gaussChange(self.Hmatrix)
+            k += 1
+
+        print('K', k)
+        self.createSecretKey(field, goppa, self.random_list)
+        self.createPublicKey(self.Hmatrix)
+        #self.printAll()
+
 
 

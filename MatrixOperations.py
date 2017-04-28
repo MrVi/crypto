@@ -9,22 +9,21 @@ def getColumnNumber(matrix):
     except Exception:
         print('ERROR: empty matrix')
 
-# def bubble_max_row(m, col):
-#     max_element = m[col][col]
-#     max_row = col
-#     for i in range(col + 1, len(m)):
-#         if abs(m[i][col]) > abs(max_element):
-#             max_element = m[i][col]
-#             max_row = i
-#     if max_row != col:
-#         m[col], m[max_row] = m[max_row], m[col]
-#     print('max_row', max_row)
+def is_singular(m):
+    """Check matrix for nonsingularity.
+    :param m: matrix (list of lists)
+    :return: True if system is nonsingular
+    """
+    for i in range(len(m)):
+        if not m[i][i]:
+            return True
+    return False
 
 def find_max_row(m,col):
     max_elem = m[col][col]
     max_row = col
     if max_elem == 1:
-        print('max_row', max_row)
+        #print('max_row', max_row)
         return
     for i in range(col+1, len(m)):
         if m[i][col] > max_elem:
@@ -33,33 +32,25 @@ def find_max_row(m,col):
             break
     if max_row != col:
         m[col], m[max_row] = m[max_row], m[col]
-    print('max_row', max_row)
+    #print('max_row', max_row)
 
-
-# def solve_gauss(m):
-#     n = len(m)
-#     # forward trace
-#     for k in range(n - 1):
-#         bubble_max_row(m, k)
-#         for i in range(k + 1, n):
-#             div = m[i][k] / m[k][k]
-#             m[i][-1] -= div * m[k][-1]
-#             for p in range(k, n):
-#                 m[i][p] -= div * m[k][p]
-
-
-def gaussChange(self):
-    max_str = getStringNumber(self.Hmatrix)
-    print('max_str:', max_str)
-    max_col = getColumnNumber(self.Hmatrix)
-    print('max_col:', max_col)
-
+def gaussChange(matrix):
+    max_str = getStringNumber(matrix)
+    #print('max_str:', max_str)
+    max_col = getColumnNumber(matrix)
+    #print('max_col:', max_col)
     for k in range(max_str - 1):
-        # bubble_max_row(self.Hmatrix, k)
-        find_max_row(self.Hmatrix, k)
+        find_max_row(matrix, k)
         for l in range(k + 1, max_str):
+            if (matrix[l][k] == 1):
                 for p in range(k, max_col):
-                    self.Hmatrix[l][p] = (self.Hmatrix[l][p] + self.Hmatrix[k][p]) % 2
+                    matrix[l][p] = (matrix[l][p] + matrix[k][p]) % 2
+    #print('Here matrix \n', np.matrix(matrix))
+    for k in range(max_str-1,0,-1):
+        for l in range(k):
+            if (matrix[l][k] == 1):
+                matrix[l][k] = (matrix[l][k] + matrix[k][k]) % 2
+
 
 def make_generator_matrix(H):
     """
@@ -99,3 +90,30 @@ def make_generator_matrix(H):
     print('G:', G)
     print('ind:', ind)
     return G, ind
+#
+# def find_max_row(m,col):
+#     max_elem = m[col][col]
+#     max_row = col
+#     if max_elem == 1:
+#         print('max_row', max_row)
+#         return
+#     for i in range(col+1, len(m)):
+#         if m[i][col] > max_elem:
+#             max_elem = m[i][col]
+#             max_row = i
+#             break
+#     if max_row != col:
+#         m[col], m[max_row] = m[max_row], m[col]
+#     print('max_row', max_row)
+#
+# def gaussChange(matrix):
+#     max_str = getStringNumber(matrix)
+#     print('max_str:', max_str)
+#     max_col = getColumnNumber(matrix)
+#     print('max_col:', max_col)
+#     for k in range(max_str - 1):
+#         find_max_row(matrix, k)
+#         for l in range(k + 1, max_str):
+#             if (matrix[l][k] == 1):
+#                 for p in range(k, max_col):
+#                     matrix[l][p] = (matrix[l][p] + matrix[k][p]) % 2
