@@ -38,8 +38,11 @@ class FieldG:
         return sum
 
     def mulElem(self,*a):
-        mul = a[0]
-        for i in range(1,len(a)):
+        mul = 1
+        for i in range(len(a)):
+            if a[i] == 0:
+                mul = 0
+                break
             ind_res = (self.elem.index(mul) + self.elem.index(a[i])) \
                       % (self.elem_num - 1)
             mul = self.elem[ind_res]
@@ -48,12 +51,21 @@ class FieldG:
     def delElem(self, *a):
         delres = a[0]
         for i in range(1,len(a)):
+            if delres == 0:
+                delres = 0
+                break
             ind_res = (self.elem.index(delres) - self.elem.index(a[i])) \
                       % (self.elem_num - 1)
             delres = self.elem[ind_res]
-        print(self.elem.index(delres))
+        #print(self.elem.index(delres))
         return delres
 
+    def elemToList(self, a):
+        el_list = [0] * self.m
+        for i in range(self.m):
+            if ((a >> self.m - 1 - i) & 0b1 != 0):
+                el_list[i] = 1
+        return el_list
 
 def polyCreate(x):
     poly = 0
